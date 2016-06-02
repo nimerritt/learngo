@@ -7,7 +7,8 @@ import "golang.org/x/tour/tree"
 // (left subtree, node, right subtree)
 // and write the values to the channel
 
-func walk(t *tree.Tree, c chan int) {
+// pass in callback by value?
+func walk(t *tree.Tree, onVisit func(int)) {
 	// base case
 	if t == nil {
 
@@ -15,18 +16,18 @@ func walk(t *tree.Tree, c chan int) {
 
 	// recursive step
 	if t.Left != nil {
-		walk(t.Left, c)
+		walk(t.Left, onVisit)
 	}
 
-	c <- t.Value
+	onVisit(t.Value)
 
 	if t.Right != nil {
-		walk(t.Right, c)
+		walk(t.Right, onVisit)
 	}
 }
 
 func Walk(t *tree.Tree, c chan int) {
-	walk(t, c)
+	walk(t, func(v int) { c <- v })
 	close(c)
 }
 
